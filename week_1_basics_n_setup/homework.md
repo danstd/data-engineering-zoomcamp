@@ -15,7 +15,7 @@ Now run the command to get help on the "docker build" command
 Which tag has the following text? - *Write the image ID to the file* 
 
 - `--imageid string`
-- **X`--iidfile string`**
+- `--iidfile string`
 - `--idimage string`
 - `--idfile string`
 
@@ -28,7 +28,7 @@ How many python packages/modules are installed?
 
 - 1
 - 6
--**X 3**
+- 3
 - 7
 
 # Prepare Postgres
@@ -59,10 +59,10 @@ where to_char(lpep_pickup_datetime, 'YYYY-MM-DD') = '2019-01-15'
 and to_char(lpep_dropoff_datetime, 'YYYY-MM-DD') = '2019-01-15';
 
 - 20689
-- **20530**
+- 20530
 - 17630
 - 21090
-The answer is 22292.Data from source is different.
+
 
 ## Question 4. Largest trip for each day
 
@@ -71,7 +71,7 @@ Use the pick up time for your calculations.
 
 - 2019-01-18
 - 2019-01-28
-- **X 2019-01-15**
+- 2019-01-15
 - 2019-01-10
 
 ## Question 5. The number of passengers
@@ -80,10 +80,10 @@ In 2019-01-01 how many trips had 2 and 3 passengers?
  
 - 2: 1282 ; 3: 266
 - 2: 1532 ; 3: 126
-- 2: **1282 ; 3: 254**
+- 2: 1282 ; 3: 254
 - 2: 1282 ; 3: 274
 
-**Actual answer 2: 1283 ; 3: 256** Data from source is different.
+
 
 ## Question 6. Largest tip
 
@@ -95,7 +95,7 @@ Note: it's not a typo, it's `tip` , not `trip`
 - Central Park
 - Jamaica
 - South Ozone Park
-- **Long Island City/Queens Plaza**
+- Long Island City/Queens Plaza
 
 
 ## Submitting the solutions
@@ -110,50 +110,3 @@ Deadline: 26 January (Thursday), 22:00 CET
 
 We will publish the solution here
 
-
-
-select count(*), count(index), count(distinct index) from green_taxi_trip limit 10;
-
-select * from green_taxi_trip limit 10;
-
-select p_date, p_date_count
-from (
-	select lpep_pickup_datetime as p_date,
-		count(lpep_pickup_datetime) as p_date_count
-	from green_taxi_trip
-	group by p_date) as p_date
-order by p_date_count desc;
-
-select count(distinct green_taxi_trip.index)
-from green_taxi_trip
-where to_char(lpep_pickup_datetime, 'YYYY-MM-DD') = '2019-01-15'
-and to_char(lpep_dropoff_datetime, 'YYYY-MM-DD') = '2019-01-15';
-
-select gtt.lpep_pickup_datetime
-from green_taxi_trip gtt
-inner join
-	(select max(trip_distance) as max_trip
-	 from green_taxi_trip) m_trip
-on gtt.trip_distance = m_trip.max_trip;
-
-
-select passenger_count, count(passenger_count)
-from (
-select passenger_count from green_taxi_trip
-where(to_char(lpep_pickup_datetime, 'YYYY-MM-DD') = '2019-01-01'
-or to_char(lpep_dropoff_datetime, 'YYYY-MM-DD') = '2019-01-01') )
-p_data
-group by passenger_count;
-
-
-select distinct zone_tip.zone
-from (
-select tz.locationid, tz.zone, gtt.*,
-dense_rank() over(order by tip_amount desc) as tip_rank
-from green_taxi_trip gtt
-inner join taxi_zone tz
-on gtt."DOLocationID" = tz.locationid
-where gtt."PULocationID" in
-(select locationid from taxi_zone tz_in where tz_in.zone = 'Astoria'))
-zone_tip
-where tip_rank = 1;

@@ -31,3 +31,4 @@ de_zoom_camp_old/**
 *.json
 *.txt
 .env
+**/*solution.md
