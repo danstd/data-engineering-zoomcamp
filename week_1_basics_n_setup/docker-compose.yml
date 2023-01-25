@@ -1,0 +1,29 @@
+services:  
+  pgdatabase:
+    #image: postgres:13
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    env_file: .env
+    #environment:
+    #  - POSTGRES_USER=
+    #  - POSTGRES_PASSWORD=
+    #  - POSTGRES_DB=
+    volumes:
+      - "./ny_taxi_postgres_data:/var/lib/postgresql/data:rw"
+      - "./scripts:/var/lib/scripts:rw"
+    ports:
+      - "5432:5432"
+    container_name: "pg-database-taxi"
+  pgadmin:
+    image: dpage/pgadmin4
+    env_file: .env
+    #environment:
+    #  - PGADMIN_DEFAULT_EMAIL=
+    #  - PGADMIN_DEFAULT_PASSWORD=
+    volumes:
+     # - "./ny_taxi_postgres_data:/var/lib/pgadmin/data_pgadmin:rw"
+     - "./data_pgadmin:/var/lib/pgadmin"
+    ports:
+      - "8080:80"
+    container_name: "pg-admin-taxi"
