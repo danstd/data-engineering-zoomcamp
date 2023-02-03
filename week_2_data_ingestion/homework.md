@@ -1,125 +1,104 @@
 ## Week 2 Homework
 
-In this homework, we'll prepare data for the next week. We'll need
-to put these datasets to our data lake:
-
-* For the lessons, we'll need the Yellow taxi dataset (years 2019 and 2020)
-* For the homework, we'll need FHV Data (for-hire vehicles, for 2019 only)
-
-You can find all the URLs on [the dataset page](https://www1.nyc.gov/site/tlc/about/tlc-trip-record-data.page)
+The goal of this homework is to familiarise users with workflow orchestration. 
 
 
-In this homework, we will:
+## Question 1. Load January 2020 data
 
-* Modify the DAG we created during the lessons for transferring the yellow taxi data
-* Create a new dag for transferring the FHV data
-* Create another dag for the Zones data
+Using the `etl_web_to_gcs.py` flow that loads taxi data into GCS as a guide, create a flow that loads the green taxi CSV dataset for January 2020 into GCS and run it. Look at the logs to find out how many rows the dataset has.
 
+How many rows does that dataset have?
 
-If you don't have access to GCP, you can do that locally and ingest data to Postgres 
-instead. If you have access to GCP, you don't need to do it for local Postgres -
-only if you want.
-
-Also note that for this homework we don't need the last step - creating a table in GCP.
-After putting all the files to the datalake, we'll create the tables in Week 3.
+* 447,770
+* 766,792
+* 299,234
+* 822,132
 
 
+## Question 2. Scheduling with Cron
 
-## Question 1: Start date for the Yellow taxi data (1 point)
+Cron is a common scheduling specification for workflows. 
 
-You'll need to parametrize the DAG for processing the yellow taxi data that
-we created in the videos. 
+Using the flow in `etl_web_to_gcs.py`, create a deployment to run on the first of every month at 5am UTC. What’s the cron schedule for that?
 
-What should be the start date for this dag?
-
-* 2019-01-01
-* 2020-01-01
-* 2021-01-01
-* days_ago(1)
+- `0 5 1 * *`
+- `0 0 5 1 *`
+- `5 * 1 0 *`
+- `* * 5 1 0`
 
 
-## Question 2: Frequency for the Yellow taxi data (1 point)
+## Question 3. Loading data to BigQuery 
 
-How often do we need to run this DAG?
+Using `etl_gcs_to_bq.py` as a starting point, modify the script for extracting data from GCS and loading it into BigQuery. This new script should not fill or remove rows with missing values. (The script is really just doing the E and L parts of ETL).
 
-* Daily
-* Monthly
-* Yearly
-* Once
+The main flow should print the total number of rows processed by the script. Set the flow decorator to log the print statement.
 
+Parametrize the entrypoint flow to accept a list of months, a year, and a taxi color. 
 
-## Re-running the DAGs for past dates
+Make any other necessary changes to the code for it to function as required.
 
-To execute your DAG for past dates, try this:
+Create a deployment for this flow to run in a local subprocess with local flow code storage (the defaults).
 
-* First, delete your DAG from the web interface (the bin icon)
-* Set the `catchup` parameter to `True`
-* Be careful with running a lot of jobs in parallel - your system may not like it. Don't set it higher than 3: `max_active_runs=3`
-* Rename the DAG to something like `data_ingestion_gcs_dag_v02` 
-* Execute it from the Airflow GUI (the play button)
+Make sure you have the parquet data files for Yellow taxi data for Feb. 2019 and March 2019 loaded in GCS. Run your deployment to append this data to your BiqQuery table. How many rows did your flow code process?
 
-
-Also, there's no data for the recent months, but `curl` will exit successfully.
-To make it fail on 404, add the `-f` flag:
-
-```bash
-curl -sSLf { URL } > { LOCAL_PATH }
-```
-
-When you run this for all the data, the temporary files will be saved in Docker and will consume your 
-disk space. If it causes problems for you, add another step in your DAG that cleans everything up.
-It could be a bash operator that runs this command:
-
-```bash
-rm name-of-csv-file.csv name-of-parquet-file.parquet
-```
+- 14,851,920
+- 12,282,990
+- 27,235,753
+- 11,338,483
 
 
-## Question 3: DAG for FHV Data (2 points)
 
-Now create another DAG - for uploading the FHV data. 
+## Question 4. Github Storage Block
 
-We will need three steps: 
+Using the `web_to_gcs` script from the videos as a guide, you want to store your flow code in a GitHub repository for collaboration with your team. Prefect can look in the GitHub repo to find your flow code and read it. Create a GitHub storage block from the UI or in Python code and use that in your Deployment instead of storing your flow code locally or baking your flow code into a Docker image. 
 
-* Download the data
-* Parquetize it 
-* Upload to GCS
+Note that you will have to push your code to GitHub, Prefect will not push it for you.
 
-If you don't have a GCP account, for local ingestion you'll need two steps:
+Run your deployment in a local subprocess (the default if you don’t specify an infrastructure). Use the Green taxi data for the month of November 2020.
 
-* Download the data
-* Ingest to Postgres
+How many rows were processed by the script?
 
-Use the same frequency and the start date as for the yellow taxi dataset
-
-Question: how many DAG runs are green for data in 2019 after finishing everything? 
-
-Note: when processing the data for 2020-01 you probably will get an error. It's up 
-to you to decide what to do with it - for Week 3 homework we won't need 2020 data.
+- 88,019
+- 192,297
+- 88,605
+- 190,225
 
 
-## Question 4: DAG for Zones (2 points)
+
+## Question 5. Email notifications
+
+The hosted Prefect Cloud lets you avoid running your own server and has automations that allow you to get notifications when certain events occur or don’t occur. 
+
+Create a free forever Prefect Cloud account at [app.prefect.cloud](https://app.prefect.cloud/) and connect your workspace to it following the steps in the UI when you sign up. 
+
+Set up an Automation that will send yourself an email when a flow run succeeds. Run the deployment used in Q4 for the Green taxi data for April 2019. Check your email to see a success notification.
+
+How many rows were processed by the script?
+
+- `125,268`
+- `377,922`
+- `728,390`
+- `514,392`
 
 
-Create the final DAG - for Zones:
+## Question 6. Secrets
 
-* Download it
-* Parquetize 
-* Upload to GCS
+Prefect Secret blocks provide secure, encrypted storage in the database and obfuscation in the UI. Create a secret block in the UI that stores a fake 10-digit password to connect to a third-party service. Once you’ve created your block in the UI, how many characters are shown as asterisks on the next page of the UI (*).
 
-(Or two steps for local ingestion: download -> ingest to postgres)
-
-How often does it need to run?
-
-* Daily
-* Monthly
-* Yearly
-* Once
+- 5
+- 6
+- 8
+- 10
 
 
 ## Submitting the solutions
 
-* Form for submitting: https://forms.gle/ViWS8pDf2tZD4zSu5
+* Form for submitting: TODO
 * You can submit your homework multiple times. In this case, only the last submission will be used. 
 
-Deadline: February 7, 17:00 CET 
+Deadline: 6 February (Monday), 22:00 CET
+
+
+## Solution
+
+We will publish the solution here
