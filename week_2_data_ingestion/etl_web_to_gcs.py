@@ -37,6 +37,8 @@ def clean(df: pd.DataFrame, color: str, output_schema: dict, column_map: dict) -
         if col not in df.columns:
             df[col] = pd.Series(dtype=output_schema[col])
 
+    #df["passenger_count"].fillna(0, inplace=True)
+
     print(df.head(2))
     print(f"columns: {df.dtypes}")
     print(f"rows: {len(df)}")
@@ -48,7 +50,7 @@ def clean(df: pd.DataFrame, color: str, output_schema: dict, column_map: dict) -
 def write_local(df: pd.DataFrame, color: str, dataset_file: str) -> Path:
     """Write DataFrame out locally as parquet file"""
     from_path = Path(__file__).parent.resolve() / Path(f"data/{color}/{dataset_file}.parquet")
-    #to_path = Path(f"data/{color}/{dataset_file}.parquet")
+
     to_path = PurePosixPath(f"data/{color}/{dataset_file}.parquet")
     df.to_parquet(from_path, compression="gzip")
     return from_path, to_path
@@ -112,4 +114,3 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     main(args)
-    
