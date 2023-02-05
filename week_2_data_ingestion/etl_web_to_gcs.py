@@ -68,9 +68,8 @@ def write_gcs(from_path: Path, to_path: Path) -> None:
 
 
 @flow()
-def etl_web_to_gcs(color: str="green", year: int=2020, months: list[int]=[1,2]) -> None:
+def etl_web_to_gcs(color: str="green", year: int=2020, month: int=2) -> None:
     """The main ETL function"""
-
 
     # Read schema
     with open(Path(__file__).parent.resolve() / "taxi_schemas.json", "r") as f:
@@ -88,15 +87,21 @@ def etl_web_to_gcs(color: str="green", year: int=2020, months: list[int]=[1,2]) 
     except ValueError:
         schema = None
 
-    for month in months:
-        dataset_file = f"{color}_tripdata_{year}-{month:02}"
-        dataset_url = f"https://github.com/DataTalksClub/nyc-tlc-data/releases/download/{color}/{dataset_file}.csv.gz"
+    dataset_file = f"{color}_tripdata_{year}-{month:02}"
+    dataset_url = f"https://github.com/DataTalksClub/nyc-tlc-data/releases/download/{color}/{dataset_file}.csv.gz"
 
-        df = fetch(dataset_url, schema=schema, date_cols=date_cols)
-        df_clean = clean(df, color=color, output_schema=combined_schema, column_map=column_map)
-        
-        from_path, to_path = write_local(df_clean, color, dataset_file)
-        write_gcs(from_path=from_path, to_path=to_path)
+    df = fetch(dataset_url, schema=schema, date_cols=date_cols)
+    df_clean = clean(df, color=color, output_schema=combined_schema, column_map=column_map)
+    
+    from_path, to_path = write_local(df_clean, color, dataset_file)
+    write_gcs(from_path=from_path, to_path=to_path)
+
+
+@flow()
+def parent_flow(color: str="green", year: int=2020, months: list[int]=[1,2]) -> None:
+
+    for month in months:
+        etl_web_to_gcs(color=color, year=year, month=month)
 
 
 def main(params):
