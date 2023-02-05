@@ -109,7 +109,8 @@ def main(params):
     year = params.year
     months = params.months
 
-    etl_web_to_gcs(color=color, year=year, months=months)
+    #etl_web_to_gcs(color=color, year=year, months=months)
+    parent_flow(color=color, year=year, months=months)
 
 
 if __name__ == "__main__":
@@ -117,7 +118,7 @@ if __name__ == "__main__":
 
     parser.add_argument("--color", help="Taxi color")
     parser.add_argument("--year", help="Year")
-    parser.add_argument("--months", help="Months (1-12)")
+    parser.add_argument("--months", nargs='+', help="Months (1-12)")
 
     parser.set_defaults(color="yellow", year=2019, months=[2,3])
     args = parser.parse_args()
