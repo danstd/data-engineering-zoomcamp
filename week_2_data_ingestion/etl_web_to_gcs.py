@@ -3,11 +3,13 @@ import json
 from pathlib import Path, PurePosixPath
 import pandas as pd
 from prefect import flow, task
+from prefect.tasks import task_input_hash
 from prefect_gcp.cloud_storage import GcsBucket
 from prefect_gcp import GcpCredentials
+from datetime import timedelta
 
 
-@task(retries=3)
+@task(retries=3, cache_key_fn=task_input_hash, cache_expiration=timedelta(days=3))
 def fetch(dataset_url: str, schema: dict, date_cols: list) -> pd.DataFrame:
     """Read taxi data from web into pandas DataFrame"""
     if schema is not None:
@@ -66,11 +68,9 @@ def write_gcs(from_path: Path, to_path: Path) -> None:
 
 
 @flow()
-def etl_web_to_gcs(color: str="green", year: int=2020, month: int=1) -> None:
+def etl_web_to_gcs(color: str="green", year: int=2020, months: list[int]=[1,2]) -> None:
     """The main ETL function"""
 
-    dataset_file = f"{color}_tripdata_{year}-{month:02}"
-    dataset_url = f"https://github.com/DataTalksClub/nyc-tlc-data/releases/download/{color}/{dataset_file}.csv.gz"
 
     # Read schema
     with open(Path(__file__).parent.resolve() / "taxi_schemas.json", "r") as f:
@@ -88,19 +88,23 @@ def etl_web_to_gcs(color: str="green", year: int=2020, month: int=1) -> None:
     except ValueError:
         schema = None
 
-    df = fetch(dataset_url, schema=schema, date_cols=date_cols)
-    df_clean = clean(df, color=color, output_schema=combined_schema, column_map=column_map)
-    
-    from_path, to_path = write_local(df_clean, color, dataset_file)
-    write_gcs(from_path=from_path, to_path=to_path)
+    for month in months:
+        dataset_file = f"{color}_tripdata_{year}-{month:02}"
+        dataset_url = f"https://github.com/DataTalksClub/nyc-tlc-data/releases/download/{color}/{dataset_file}.csv.gz"
+
+        df = fetch(dataset_url, schema=schema, date_cols=date_cols)
+        df_clean = clean(df, color=color, output_schema=combined_schema, column_map=column_map)
+        
+        from_path, to_path = write_local(df_clean, color, dataset_file)
+        write_gcs(from_path=from_path, to_path=to_path)
 
 
 def main(params):
     color = params.color
     year = params.year
-    month = params.month
+    months = params.months
 
-    etl_web_to_gcs(color=color, year=year, month=month)
+    etl_web_to_gcs(color=color, year=year, months=months)
 
 
 if __name__ == "__main__":
@@ -108,9 +112,9 @@ if __name__ == "__main__":
 
     parser.add_argument("--color", help="Taxi color")
     parser.add_argument("--year", help="Year")
-    parser.add_argument("--month", help="Month (1-12)")
+    parser.add_argument("--months", help="Months (1-12)")
 
-    parser.set_defaults(color="yellow", year=2019, month=3)
+    parser.set_defaults(color="yellow", year=2019, months=[2,3])
     args = parser.parse_args()
 
     main(args)
