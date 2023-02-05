@@ -1,0 +1,71 @@
+###
+### A complete description of a Prefect Deployment for flow 'parent-flow'
+###
+# Command line for building: 
+# prefect deployment build week_2_data_ingestion/etl_web_to_gcs.py:parent_flow --name git_w2_deploy --tag git-de-zoom-camp -sb github/git-de-zoom-camp -a 
+name: git_w2_deploy
+description: null
+version: 2cb251b38f1b7f5ac66faf3668a0b4a8
+# The work queue that will handle this deployment's runs
+work_queue_name: default
+work_pool_name: null
+tags:
+- git-de-zoom-camp
+parameters: {}
+schedule: null
+is_schedule_active: null
+infra_overrides: {}
+infrastructure:
+  type: process
+  env: {}
+  labels: {}
+  name: null
+  command: null
+  stream_output: true
+  working_dir: null
+  block_type_slug: process
+  _block_type_slug: process
+
+###
+### DO NOT EDIT BELOW THIS LINE
+###
+flow_name: parent-flow
+manifest_path: null
+storage:
+  repository: https://github.com/danstd/data-engineering-zoomcamp
+  reference: null
+  access_token: null
+  include_git_objects: true
+  _block_document_id: bcb45730-cffd-4f9e-b05d-acbfcf226373
+  _block_document_name: git-de-zoom-camp
+  _is_anonymous: false
+  block_type_slug: github
+  _block_type_slug: github
+path: ''
+entrypoint: week_2_data_ingestion\etl_web_to_gcs.py:parent_flow
+parameter_openapi_schema:
+  title: Parameters
+  type: object
+  properties:
+    color:
+      title: color
+      default: green
+      position: 0
+      type: string
+    year:
+      title: year
+      default: 2020
+      position: 1
+      type: integer
+    months:
+      title: months
+      default:
+      - 1
+      - 2
+      position: 2
+      type: array
+      items:
+        type: integer
+  required: null
+  definitions: null
+timestamp: '2023-02-05T16:54:35.403744+00:00'
