@@ -1,38 +1,83 @@
-## Homework
-[Form](https://forms.gle/ytzVYUh2RptgkvF79)  
-We will use all the knowledge learned in this week. Please answer your questions via form above.  
-**Deadline** for the homework is 14th Feb 2022 17:00 CET.
+## Week 3 Homework
+<b><u>Important Note:</b></u> <p>You can load the data however you would like, but keep the files in .GZ Format. 
+If you are using orchestration such as Airflow or Prefect do not load the data into Big Query using the orchestrator.</br> 
+Stop with loading the files into a bucket. </br></br>
+<u>NOTE:</u> You can use the CSV option for the GZ files when creating an External Table</br>
 
-### Question 1: 
-**What is count for fhv vehicles data for year 2019**  
-Can load the data for cloud storage and run a count(*)
+<b>SETUP:</b></br>
+Create an external table using the fhv 2019 data. </br>
+Create a table in BQ using the fhv 2019 data (do not partition or cluster this table). </br>
+Data can be found here: https://github.com/DataTalksClub/nyc-tlc-data/releases/tag/fhv </p>
 
-### Question 2: 
-**How many distinct dispatching_base_num we have in fhv for 2019**  
-Can run a distinct query on the table from question 1
+## Question 1:
+What is the count for fhv vehicle records for year 2019?
+- 65,623,481
+- 43,244,696
+- 22,978,333
+- 13,942,414
 
-### Question 3: 
-**Best strategy to optimise if query always filter by dropoff_datetime and order by dispatching_base_num**  
-Review partitioning and clustering video.   
-We need to think what will be the most optimal strategy to improve query 
-performance and reduce cost.
+## Question 2:
+Write a query to count the distinct number of affiliated_base_number for the entire dataset on both the tables.</br> 
+What is the estimated amount of data that will be read when this query is executed on the External Table and the Table?
 
-### Question 4: 
-**What is the count, estimated and actual data processed for query which counts trip between 2019/01/01 and 2019/03/31 for dispatching_base_num B00987, B02060, B02279**  
-Create a table with optimized clustering and partitioning, and run a 
-count(*). Estimated data processed can be found in top right corner and
-actual data processed can be found after the query is executed.
+- 25.2 MB for the External Table and 100.87MB for the BQ Table
+- 225.82 MB for the External Table and 47.60MB for the BQ Table
+- 0 MB for the External Table and 0MB for the BQ Table
+- 0 MB for the External Table and 317.94MB for the BQ Table 
 
-### Question 5: 
-**What will be the best partitioning or clustering strategy when filtering on dispatching_base_num and SR_Flag**  
-Review partitioning and clustering video. 
-Partitioning cannot be created on all data types.
 
-### Question 6: 
-**What improvements can be seen by partitioning and clustering for data size less than 1 GB**  
-Partitioning and clustering also creates extra metadata.  
-Before query execution this metadata needs to be processed.
+## Question 3:
+How many records have both a blank (null) PUlocationID and DOlocationID in the entire dataset?
+- 717,748
+- 1,215,687
+- 5
+- 20,332
 
-### (Not required) Question 7: 
-**In which format does BigQuery save data**  
-Review big query internals video.
+## Question 4:
+What is the best strategy to optimize the table if query always filter by pickup_datetime and order by affiliated_base_number?
+- Cluster on pickup_datetime Cluster on affiliated_base_number
+- Partition by pickup_datetime Cluster on affiliated_base_number
+- Partition by pickup_datetime Partition by affiliated_base_number
+- Partition by affiliated_base_number Cluster on pickup_datetime
+
+## Question 5:
+Implement the optimized solution you chose for question 4. Write a query to retrieve the distinct affiliated_base_number between pickup_datetime 2019/03/01 and 2019/03/31 (inclusive).</br> 
+Use the BQ table you created earlier in your from clause and note the estimated bytes. Now change the table in the from clause to the partitioned table you created for question 4 and note the estimated bytes processed. What are these values? Choose the answer which most closely matches.
+- 12.82 MB for non-partitioned table and 647.87 MB for the partitioned table
+- 647.87 MB for non-partitioned table and 23.06 MB for the partitioned table
+- 582.63 MB for non-partitioned table and 0 MB for the partitioned table
+- 646.25 MB for non-partitioned table and 646.25 MB for the partitioned table
+
+
+## Question 6: 
+Where is the data stored in the External Table you created?
+
+- Big Query
+- GCP Bucket
+- Container Registry
+- Big Table
+
+
+## Question 7:
+It is best practice in Big Query to always cluster your data:
+- True
+- False
+
+
+## (Not required) Question 8:
+A better format to store these files may be parquet. Create a data pipeline to download the gzip files and convert them into parquet. Upload the files to your GCP Bucket and create an External and BQ Table. 
+
+
+Note: Column types for all files used in an External Table must have the same datatype. While an External Table may be created and shown in the side panel in Big Query, this will need to be validated by running a count query on the External Table to check if any errors occur. 
+ 
+## Submitting the solutions
+
+* Form for submitting: https://forms.gle/rLdvQW2igsAT73HTA
+* You can submit your homework multiple times. In this case, only the last submission will be used. 
+
+Deadline: 13 February (Monday), 22:00 CET
+
+
+## Solution
+
+We will publish the solution here

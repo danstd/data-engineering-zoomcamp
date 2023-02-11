@@ -32,5 +32,6 @@ de_zoom_camp_old/**
 *.txt
 .env
 *.parquet
-*.csv*.csv.gz
+*.csv
+*.csv.gz
 **/*solution.md
