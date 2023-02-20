@@ -7,16 +7,17 @@ with tripdata as
   from {{ source('staging','fhv_partitioned') }}
   --where dispatching_base_num is not null 
 )
+
 select
     -- identifiers
-    --{{ dbt_utils.surrogate_key(['vendorid', 'lpep_pickup_datetime']) }} as tripid,
+    /*{{ dbt_utils.surrogate_key(['vendorid', 'lpep_pickup_datetime']) }} as tripid,*/
     cast(dispatching_base_num as integer) as dispatching_base_num,
     cast(PUlocationID as integer) as  PUlocationID,
     cast(DOlocationID as integer) as DOlocationID,
     
     -- timestamps
-    --cast(pickup_datetime as timestamp) as pickup_datetime,
-    --cast(dropOff_datetime as timestamp) as dropOff_datetime,
+    /*cast(pickup_datetime as timestamp) as pickup_datetime,
+    cast(dropOff_datetime as timestamp) as dropOff_datetime,*/
     pickup_datetime,
     dropOff_datetime,
     
