@@ -11,7 +11,7 @@ with tripdata as
 select
     -- identifiers
     /*{{ dbt_utils.surrogate_key(['vendorid', 'lpep_pickup_datetime']) }} as tripid,*/
-    cast(dispatching_base_num as integer) as dispatching_base_num,
+    cast(dispatching_base_num as string) as dispatching_base_num,
     cast(PUlocationID as integer) as  PUlocationID,
     cast(DOlocationID as integer) as DOlocationID,
     
@@ -23,7 +23,7 @@ select
     
     -- trip info
     cast(SR_Flag as integer) as SR_Flag,
-    cast(Affiliated_base_number as integer) as Affiliated_base_number
+    cast(Affiliated_base_number as string) as Affiliated_base_number
     
 from tripdata
 --where rn = 1
