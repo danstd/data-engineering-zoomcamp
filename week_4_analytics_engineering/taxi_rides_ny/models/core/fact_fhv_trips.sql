@@ -22,7 +22,7 @@ inner join dim_zones as dropoff_zone
 on fhv_data.DOlocationID = dropoff_zone.locationid
 
 {% if var('filter_year', default=false) %}
-where extract(year from pickup_datetime) = var('year')
+where extract(year from pickup_datetime) = {{var('year', default=2019)}}
 {% endif %}
 
 {% if var('is_test_run', default=true) %}
