@@ -62,7 +62,7 @@ def write_local(df: pd.DataFrame, color: str, dataset_file: str) -> Path:
 def write_gcs(from_path: Path, to_path: Path) -> None:
     """Upload local parquet file to GCS"""
 
-    gcs_block = GcsBucket.load("dtc-data-lake-de-z-camp")
+    gcs_block = GcsBucket.load("dsd-data-zoom-camp-bucket")
     gcs_block.upload_from_path(from_path=from_path, to_path=to_path)
     return
 
@@ -94,7 +94,7 @@ def etl_web_to_gcs(color: str="green", year: int=2020, month: int=2) -> None:
     df_clean = clean(df, color=color, output_schema=combined_schema, column_map=column_map)
     
     from_path, to_path = write_local(df_clean, color, dataset_file)
-    write_gcs(from_path=from_path, to_path=to_path)
+    #write_gcs(from_path=from_path, to_path=to_path)
 
 
 @flow()
@@ -120,7 +120,7 @@ if __name__ == "__main__":
     parser.add_argument("--year", help="Year")
     parser.add_argument("--months", nargs='+', help="Months (1-12)")
 
-    parser.set_defaults(color="yellow", year=2019, months=[2,3])
+    parser.set_defaults(color="yellow", year=2019, months=[1])
     args = parser.parse_args()
 
     main(args)

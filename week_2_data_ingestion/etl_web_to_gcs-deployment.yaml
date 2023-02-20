@@ -3,12 +3,12 @@
 ###
 name: Parameterized ETL
 description: The main ETL function
-version: ae3f974071bc67c3fb5cae6c76b979a0
+version: dac4e0587287a560545c343ff8a732cf
 # The work queue that will handle this deployment's runs
 work_queue_name: default
 work_pool_name: null
 tags: []
-parameters: {"color": "yellow", "year": 2021, "months": [1, 2, 3]}
+parameters: {}
 schedule: null
 is_schedule_active: null
 infra_overrides: {}
@@ -45,15 +45,11 @@ parameter_openapi_schema:
       default: 2020
       position: 1
       type: integer
-    months:
-      title: months
-      default:
-      - 1
-      - 2
+    month:
+      title: month
+      default: 2
       position: 2
-      type: array
-      items:
-        type: integer
+      type: integer
   required: null
   definitions: null
-timestamp: '2023-02-04T00:42:31.337251+00:00'
+timestamp: '2023-02-19T20:11:53.185583+00:00'

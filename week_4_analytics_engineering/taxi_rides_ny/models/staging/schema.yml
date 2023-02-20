@@ -9,12 +9,12 @@ sources:
       # For postgres:
       #database: production
 
-      schema: trips_data_all
+      schema: de_z_camp_dataset
 
       # loaded_at_field: record_loaded_at
       tables:
-        - name: green_tripdata_partitioned
-        - name: yellow_tripdata_partitioned
+        - name: green_tripdata
+        - name: yellow_tripdata
          # freshness:
            # error_after: {count: 6, period: hour}
 
@@ -201,3 +201,34 @@ models:
             description: Total amount of all tolls paid in trip.
           - name: Total_amount 
             description: The total amount charged to passengers. Does not include cash tips.
+
+    - name: stg_fhv_tripdata
+      description: FHV data.
+      columns:
+        - name: dispatching_base_num
+          description: The TLC Base License Number of the base that dispatched the trip
+        - name: pickup_datetime
+          description: Pickup Datetime
+        - name: dropOff_datetime
+          description: Dropoff Datetime.
+        - name: PUlocationID
+          description: Pickup location ID
+          tests:
+              - relationships:
+                  to: ref('taxi_zone_lookup')
+                  field: locationid
+                  severity: warn
+        - name: DOlocationID
+          description: Dropoff location ID
+          tests:
+              - relationships:
+                  to: ref('taxi_zone_lookup')
+                  field: locationid
+                  severity: warn
+        - name: SR_Flag
+          description: >
+            Indicates if the trip was a part of a shared ride chain offered by a
+            High Volume FHV company (e.g. Uber Pool, Lyft Line). For shared
+            trips, the value is 1. For non-shared rides, this field is null.
+        - name: Affiliated_base_number
+          description: No information.
