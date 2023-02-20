@@ -20,3 +20,13 @@ inner join dim_zones as pickup_zone
 on trips_unioned.pickup_locationid = pickup_zone.locationid
 inner join dim_zones as dropoff_zone
 on trips_unioned.dropoff_locationid = dropoff_zone.locationid
+
+{% if var('filter_year', default=true) %}
+where extract(year from pickup_datetime) = var('year')
+{% endif %}
+
+{% if var('is_test_run', default=true) %}
+
+  limit 100
+
+{% endif %}
